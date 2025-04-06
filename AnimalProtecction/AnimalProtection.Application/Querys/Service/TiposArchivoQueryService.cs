@@ -16,19 +16,12 @@ namespace AnimalProtection.Application.Querys.Service
             _repository = repository;
         }
 
-        public async Task<ResultResponse<TiposArchivoCreateRecord>> CreateTiposArchivo(TiposArchivoCreateRecord createRecord)
+        public async Task<ResultResponse<TiposArchivoRecord>> CreateTiposArchivo(TiposArchivoCreateRecord createRecord)
         {
-            var tiposArchivo = new Tiposarchivo
-            {
-                Id = createRecord.Id ?? Guid.NewGuid(),
-                Nombre = createRecord.Nombre,
-                Descripcion = createRecord.Descripcion,
-                Estaactivo = createRecord.Estaactivo ?? true
-            };
-
+            var tiposArchivo = Tiposarchivo.CreateFromRecord(createRecord);
             await _repository.AddAsync(tiposArchivo);
             await _repository.SaveAsync();
-            return ResultResponse<TiposArchivoCreateRecord>.Success(createRecord, 201);
+            return ResultResponse<TiposArchivoRecord>.Success(new TiposArchivoRecord(tiposArchivo), 201);
         }
 
         public async Task<ResultResponse<bool>> DeleteTiposArchivo(Guid id)
@@ -38,8 +31,7 @@ namespace AnimalProtection.Application.Querys.Service
             {
                 return ResultResponse<bool>.Failure($"No se encontró el tipo de archivo con id: {id}", 404);
             }
-            // Delete lógico: marcar como inactivo
-            tiposArchivo.Estaactivo = false;
+            tiposArchivo.Delete();
             await _repository.UpdateAsync(tiposArchivo);
             await _repository.SaveAsync();
             return ResultResponse<bool>.Success(true, 200);
@@ -47,19 +39,12 @@ namespace AnimalProtection.Application.Querys.Service
 
         public async Task<ResultResponse<PagedResponseRecord<TiposArchivoRecord>>> GetAllTiposArchivo(int pageNumber, int pageSize)
         {
-            var query = _repository.GetPageableAsync()
-                .Where(t => t.Estaactivo == true);
-
+            var query = _repository.GetPageableAsync().Where(t => t.Estaactivo == true);
             int totalRecords = await query.CountAsync();
-            var pagedResult = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
+            var pagedResult = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             var records = pagedResult.Select(t => new TiposArchivoRecord(t)).ToList();
             var response = new PagedResponseRecord<TiposArchivoRecord>(
-                records, pageNumber, pageSize, totalRecords,
-                (int)Math.Ceiling((double)totalRecords / pageSize)
+                records, pageNumber, pageSize, totalRecords, (int)Math.Ceiling((double)totalRecords / pageSize)
             );
             return ResultResponse<PagedResponseRecord<TiposArchivoRecord>>.Success(response);
         }
@@ -74,22 +59,17 @@ namespace AnimalProtection.Application.Querys.Service
             return ResultResponse<TiposArchivoRecord>.Success(new TiposArchivoRecord(tiposArchivo));
         }
 
-        public async Task<ResultResponse<TiposArchivoUpdateRecord>> UpdateTiposArchivo(TiposArchivoUpdateRecord updateRecord)
+        public async Task<ResultResponse<TiposArchivoRecord>> UpdateTiposArchivo(TiposArchivoUpdateRecord updateRecord)
         {
             var tiposArchivo = await _repository.GetByIdAsync(updateRecord.Id);
             if (tiposArchivo == null)
             {
-                return ResultResponse<TiposArchivoUpdateRecord>.Failure($"No se encontró el tipo de archivo con id: {updateRecord.Id}", 404);
+                return ResultResponse<TiposArchivoRecord>.Failure($"No se encontró el tipo de archivo con id: {updateRecord.Id}", 404);
             }
-            // Actualizar propiedades
-            tiposArchivo.Nombre = updateRecord.Nombre;
-            tiposArchivo.Descripcion = updateRecord.Descripcion;
-            if (updateRecord.Estaactivo.HasValue)
-                tiposArchivo.Estaactivo = updateRecord.Estaactivo;
-
+            tiposArchivo.UpdateFromRecord(updateRecord);
             await _repository.UpdateAsync(tiposArchivo);
             await _repository.SaveAsync();
-            return ResultResponse<TiposArchivoUpdateRecord>.Success(updateRecord);
+            return ResultResponse<TiposArchivoRecord>.Success(new TiposArchivoRecord(tiposArchivo));
         }
     }
 }

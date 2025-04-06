@@ -4,9 +4,9 @@ using AnimalProtection.Repositories.Interface;
 
 namespace AnimalProtection.Generated.Repositories.Repository
 {
-    public class ArchivoRepository : GenericRepository<Archivo>, IArchivoRepository
+    public class TiposArchivoRepository : GenericRepository<Tiposarchivo>, ITiposArchivoRepository
     {
-        public ArchivoRepository(AnimalprotectionContext context) : base(context)
+        public TiposArchivoRepository(AnimalprotectionContext context) : base(context)
         {
         }
     }

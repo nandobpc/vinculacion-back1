@@ -54,5 +54,6 @@ public class InfrastructureModule : Module
         builder.RegisterType<TiposArchivoRepository>()
             .As<ITiposArchivoRepository>();
 
+
     }
 }

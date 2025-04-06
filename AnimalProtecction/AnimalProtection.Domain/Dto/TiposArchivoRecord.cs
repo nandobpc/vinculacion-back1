@@ -4,12 +4,16 @@ namespace AnimalProtection.Domain.Dto
         Guid Id,
         string Nombre,
         string? Descripcion,
-        bool? Estaactivo
+        bool Estaactivo
     )
     {
         public TiposArchivoRecord(Entities.Tiposarchivo tiposArchivo)
-            : this(tiposArchivo.Id, tiposArchivo.Nombre, tiposArchivo.Descripcion, tiposArchivo.Estaactivo)
-        {
-        }
+            : this(
+                tiposArchivo.Id,
+                tiposArchivo.Nombre,
+                tiposArchivo.Descripcion,
+                tiposArchivo.Estaactivo ?? false
+            )
+        { }
     }
 }

@@ -7,8 +7,8 @@ namespace AnimalProtection.Application.Querys.Interface
     {
         Task<ResultResponse<PagedResponseRecord<TiposArchivoRecord>>> GetAllTiposArchivo(int pageNumber, int pageSize);
         Task<ResultResponse<TiposArchivoRecord>> GetTiposArchivoById<T>(Guid id);
-        Task<ResultResponse<TiposArchivoCreateRecord>> CreateTiposArchivo(TiposArchivoCreateRecord createRecord);
-        Task<ResultResponse<TiposArchivoUpdateRecord>> UpdateTiposArchivo(TiposArchivoUpdateRecord updateRecord);
+        Task<ResultResponse<TiposArchivoRecord>> CreateTiposArchivo(TiposArchivoCreateRecord createRecord);
+        Task<ResultResponse<TiposArchivoRecord>> UpdateTiposArchivo(TiposArchivoUpdateRecord updateRecord);
         Task<ResultResponse<bool>> DeleteTiposArchivo(Guid id);
     }
 }

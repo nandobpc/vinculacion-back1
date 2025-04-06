@@ -20,7 +20,7 @@ namespace AnimalProtection.Api.Controller
         }
 
         /// <summary>
-        /// Listar archivos activos (Estaactivo = true) con paginación.
+        /// Obtiene una lista paginada de archivos activos.
         /// </summary>
         [HttpGet("GetAllArchivos")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -28,11 +28,11 @@ namespace AnimalProtection.Api.Controller
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllArchivos([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            _logger.LogInformation("Iniciando GetAllArchivos");
+            _logger.LogInformation("Obteniendo lista de archivos activos");
             var result = await _archivoService.GetAllArchivos(pageNumber, pageSize);
             if (!result.IsSuccess)
             {
-                _logger.LogWarning("Error en GetAllArchivos: {Error}", result.Error);
+                _logger.LogWarning("Error obteniendo archivos: {Error}", result.Error);
                 return result.Code switch
                 {
                     (int)HttpStatusCode.NotFound => NotFound(result.Error),
@@ -63,8 +63,8 @@ namespace AnimalProtection.Api.Controller
         public async Task<IActionResult> CreateArchivo([FromBody] ArchivoCreateRecord createRecord)
         {
             var result = await _archivoService.CreateArchivo(createRecord);
-            return result.IsSuccess
-                ? CreatedAtAction(nameof(GetArchivoById), new { id = createRecord.Id }, result.Value)
+            return result.IsSuccess 
+                ? CreatedAtAction(nameof(GetArchivoById), new { id = result.Value.Id }, result.Value)
                 : BadRequest(result.Error);
         }
 
@@ -82,7 +82,7 @@ namespace AnimalProtection.Api.Controller
         }
 
         /// <summary>
-        /// Elimina lógicamente un archivo (Estaactivo = false).
+        /// Elimina lógicamente un archivo (marca Estaactivo = false).
         /// </summary>
         [HttpDelete("DeleteArchivo/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

@@ -5,17 +5,17 @@ namespace AnimalProtection.Domain.Dto
         string Url,
         string Formato,
         Guid Idtipoarchivo,
-        bool? Estaactivo
+        bool Estaactivo
     )
     {
         public ArchivoRecord(Entities.Archivo archivo)
-        : this(
-            archivo.Id,
-            archivo.Url,
-            archivo.Formato,
-            archivo.Idtipoarchivo,
-            archivo.Estaactivo
-        )
-        {}
+            : this(
+                archivo.Id,
+                archivo.Url,
+                archivo.Formato,
+                archivo.Idtipoarchivo,
+                archivo.Estaactivo ?? false
+            )
+        { }
     }
 }
